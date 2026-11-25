@@ -6,21 +6,23 @@ use copet_lib::{
         preview_codex_imports, preview_folder_imports,
     },
 };
+#[cfg(unix)]
+use std::{env, ffi::OsString, sync::Mutex};
 use std::{
-    env,
-    ffi::OsString,
     fs,
     path::{Path, PathBuf},
-    sync::Mutex,
 };
 
+#[cfg(unix)]
 static HOME_ENV_LOCK: Mutex<()> = Mutex::new(());
 
+#[cfg(unix)]
 struct EnvRestore {
     key: &'static str,
     value: Option<OsString>,
 }
 
+#[cfg(unix)]
 impl Drop for EnvRestore {
     fn drop(&mut self) {
         if let Some(value) = &self.value {
@@ -61,6 +63,7 @@ fn create_pet_package(root: &Path, storage_id: &str, manifest_id: &str, display_
     fs::write(package_dir.join("spritesheet.png"), b"sprite").unwrap();
 }
 
+#[cfg(unix)]
 #[test]
 fn preview_session_directory_is_under_copet_root() {
     let _guard = HOME_ENV_LOCK.lock().unwrap();
@@ -179,6 +182,7 @@ fn preview_folder_imports_skips_unsafe_manifest_id_without_staging() {
     assert!(!store.root().join("pets/bad-manifest").exists());
 }
 
+#[cfg(unix)]
 #[test]
 fn preview_folder_imports_skips_unsafe_source_storage_id_without_staging() {
     let temp = tempfile::tempdir().unwrap();
@@ -618,6 +622,33 @@ fn localizes_commit_partial_failures_for_chinese_locale() {
     assert_eq!(localized.failed.len(), 1);
     assert_eq!(localized.failed[0].preview_id, "missing");
     assert_eq!(localized.failed[0].error_message, "预览宠物包已不可用");
+}
+
+#[test]
+fn localizes_commit_partial_failures_for_spanish_locale() {
+    let temp = tempfile::tempdir().unwrap();
+    let store = make_store(&temp);
+    let source_dir = temp.path().join("alpha");
+    create_pet_package(temp.path(), "alpha", "alpha", "Alpha");
+
+    let session = create_import_session(&store).unwrap();
+    let batch = preview_folder_imports(&store, &session.session_id, &[source_dir]).unwrap();
+
+    let result = commit_import_previews(
+        &store,
+        &session.session_id,
+        &["missing".to_string(), batch.previews[0].preview_id.clone()],
+    )
+    .unwrap();
+    let localized = localize_commit_result_partial_errors(result, Locale::EsEs);
+
+    assert_eq!(localized.imported.len(), 1);
+    assert_eq!(localized.failed.len(), 1);
+    assert_eq!(localized.failed[0].preview_id, "missing");
+    assert_eq!(
+        localized.failed[0].error_message,
+        "El paquete de vista previa ya no está disponible"
+    );
 }
 
 #[test]

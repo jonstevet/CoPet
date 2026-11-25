@@ -634,6 +634,7 @@ fn install_codex_pet_allows_user_pet_that_shadows_builtin_id() {
     assert!(state.pets.iter().any(|pet| pet.id == "user:dragon"));
 }
 
+#[cfg(unix)]
 #[test]
 fn install_codex_pet_rejects_unsafe_source_storage_id_without_writing() {
     let temp = tempfile::tempdir().unwrap();
