@@ -1,0 +1,11 @@
+{
+  "id": "rem-definitiva",
+  "slug": "rem-definitiva",
+  "displayName": "Rem Definitiva",
+  "description": "Edición unificada con lo mejor de las 8 versiones de Rem en Petdex: diseño canónico de rem-xl, bandeja de té de rem-5 (limpiada) y expresiones de disculpa/pensamiento de rem-4.",
+  "frameWidth": 192,
+  "frameHeight": 208,
+  "gridColumns": 8,
+  "gridRows": 9,
+  "spritesheetPath": "spritesheet.webp"
+}
