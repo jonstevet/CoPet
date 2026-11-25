@@ -1,0 +1,60 @@
+name: Build Windows (Español)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, spanish]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type-check frontend
+        run: pnpm exec tsc --noEmit
+
+      - name: Run Rust tests
+        run: cargo test --manifest-path src-tauri/Cargo.toml
+
+      - name: Build Windows installer (NSIS)
+        id: tauri
+        uses: tauri-apps/tauri-action@v0
+        with:
+          args: --target x86_64-pc-windows-msvc --bundles nsis
+
+      - name: Stage CoPet-windows-x64.exe
+        shell: bash
+        env:
+          ARTIFACT_PATHS: ${{ steps.tauri.outputs.artifactPaths }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist-release
+          SRC=$(printf '%s' "$ARTIFACT_PATHS" | jq -r '.[] | select(endswith(".exe"))' | head -n 1)
+          if [ -z "$SRC" ]; then
+            echo "::error::No .exe bundle found in: $ARTIFACT_PATHS"
+            exit 1
+          fi
+          cp "$SRC" dist-release/CoPet-windows-x64.exe
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CoPet-windows-x64-es
+          path: dist-release/CoPet-windows-x64.exe
+          if-no-files-found: error

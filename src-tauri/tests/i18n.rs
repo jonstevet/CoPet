@@ -29,6 +29,25 @@ fn detects_english_locale_from_preferred_language_tag() {
 }
 
 #[test]
+fn detects_spanish_locale_from_preferred_language_tag_and_env() {
+    assert_eq!(detect_locale_from_tag("es-ES"), Some(Locale::EsEs));
+    assert_eq!(detect_locale_from_tag("es-CO"), Some(Locale::EsEs));
+    assert_eq!(detect_locale_from_tag("es-419"), Some(Locale::EsEs));
+    let locale = detect_locale_from_env([
+        ("LANGUAGE", ""),
+        ("LC_ALL", ""),
+        ("LC_MESSAGES", ""),
+        ("LANG", "es_CO.UTF-8"),
+    ]);
+    assert_eq!(locale, Locale::EsEs);
+    assert_eq!(t(Locale::EsEs, MessageKey::TrayQuit), "Salir");
+    assert_eq!(t(Locale::EsEs, MessageKey::TrayLanguageMenu), "Idioma");
+    assert_eq!(t(Locale::EsEs, MessageKey::TrayLanguageSpanish), "Español");
+    assert_eq!(t(Locale::EnUs, MessageKey::TrayLanguageSpanish), "Español");
+    assert_eq!(t(Locale::ZhCn, MessageKey::TrayLanguageSpanish), "Español");
+}
+
+#[test]
 fn returns_none_for_unsupported_language_tag() {
     assert_eq!(detect_locale_from_tag("fr-FR"), None);
     assert_eq!(detect_locale_from_tag(""), None);

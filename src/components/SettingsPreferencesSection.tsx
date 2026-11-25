@@ -38,7 +38,7 @@ const emitSliderDrag = (
 interface SettingsPreferencesSectionProps {
   agentMessageDisplay: AgentMessageDisplay;
   setAgentMessageDisplay: (next: AgentMessageDisplay) => void;
-  locale: "en-US" | "zh-CN";
+  locale: "en-US" | "zh-CN" | "es-ES";
   setLocalePreference: (next: LocalePreference) => void;
   petVisible: boolean;
   setPetVisible: (visible: boolean) => void;
@@ -404,8 +404,11 @@ export function SettingsPreferencesSection({
                 options={[
                   { label: t("english"), value: "en-US" },
                   { label: t("zhCn"), value: "zh-CN" },
+                  { label: t("spanish"), value: "es-ES" },
                 ]}
-                value={locale === "zh-CN" ? "zh-CN" : "en-US"}
+                value={
+                  locale === "zh-CN" || locale === "es-ES" ? locale : "en-US"
+                }
               />
             </div>
           </div>

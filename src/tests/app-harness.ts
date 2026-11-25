@@ -53,8 +53,8 @@ export type PetInteractionPrefs = {
 export type AppState = {
   currentPetId: string;
   currentSoundPackId?: string;
-  locale?: "en-US" | "zh-CN";
-  localePreference?: "en-US" | "zh-CN";
+  locale?: "en-US" | "zh-CN" | "es-ES";
+  localePreference?: "en-US" | "zh-CN" | "es-ES";
   pets: PetSummary[];
   soundPacks?: SoundPackSummary[];
   onboardingComplete: boolean;
@@ -660,7 +660,10 @@ export async function createAppHarness(browser: Browser, options: AppHarnessOpti
         }
         if (command === "set_locale_preference") {
           const localePreference = args.localePreference as AppState["localePreference"];
-          const locale = localePreference === "zh-CN" ? "zh-CN" : "en-US";
+          const locale =
+            localePreference === "zh-CN" || localePreference === "es-ES"
+              ? localePreference
+              : "en-US";
           state = { ...state, locale, localePreference };
           await emitAppState();
           return state;

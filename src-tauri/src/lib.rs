@@ -96,6 +96,7 @@ const TRAY_MENU_ABOUT_ID: &str = "open-about";
 const TRAY_MENU_LANGUAGE_SUBMENU_ID: &str = "language-submenu";
 const TRAY_MENU_LANG_EN_ID: &str = "lang-en-us";
 const TRAY_MENU_LANG_ZH_ID: &str = "lang-zh-cn";
+const TRAY_MENU_LANG_ES_ID: &str = "lang-es-es";
 const TRAY_MENU_QUIT_ID: &str = "quit-app";
 
 const SETTINGS_SECTION_PETS: &str = "pets";
@@ -123,6 +124,7 @@ struct TrayMenuHandles {
     language_menu: Submenu<Wry>,
     language_en: CheckMenuItem<Wry>,
     language_zh: CheckMenuItem<Wry>,
+    language_es: CheckMenuItem<Wry>,
     quit: MenuItem<Wry>,
 }
 
@@ -168,6 +170,46 @@ fn localize_adapter_error(error: AdapterError) -> String {
             AdapterError::UnmanagedPiExtensionRemoval(path) => {
                 format!(
                     "Pi 扩展目录不是 CoPet 管理，拒绝删除：{}",
+                    path.to_string_lossy()
+                )
+            }
+        },
+        Locale::EsEs => match error {
+            AdapterError::UnknownAdapter(adapter_id) => {
+                format!("Adaptador desconocido '{adapter_id}'")
+            }
+            AdapterError::Io(error) => format!("Error de E/S: {error}"),
+            AdapterError::Json(error) => format!("Error de JSON: {error}"),
+            AdapterError::InvalidJson(path) => {
+                format!(
+                    "Se rechazó sobrescribir un archivo JSON inválido: {}",
+                    path.to_string_lossy()
+                )
+            }
+            AdapterError::InvalidToml(path) => {
+                format!("Archivo TOML inválido: {}", path.to_string_lossy())
+            }
+            AdapterError::HookHash(error) => {
+                format!("No se pudo calcular el hash de confianza del hook: {error}")
+            }
+            AdapterError::AgentExecutableMissing { display_name } => {
+                format!("{display_name} no está instalado o no está en el PATH")
+            }
+            AdapterError::UnsupportedPlatform {
+                display_name,
+                platform,
+            } => {
+                format!("Los hooks de {display_name} no son compatibles con {platform}")
+            }
+            AdapterError::UnmanagedPiExtension(path) => {
+                format!(
+                    "El directorio de extensión Pi ya existe y no está gestionado por CoPet: {}",
+                    path.to_string_lossy()
+                )
+            }
+            AdapterError::UnmanagedPiExtensionRemoval(path) => {
+                format!(
+                    "El directorio de extensión Pi no está gestionado por CoPet, no se eliminará: {}",
                     path.to_string_lossy()
                 )
             }
@@ -350,6 +392,9 @@ pub fn refresh_tray_menu(app: &AppHandle, state: &AppState) {
     let _ = handles
         .language_zh
         .set_text(t(locale, MessageKey::TrayLanguageChinese));
+    let _ = handles
+        .language_es
+        .set_text(t(locale, MessageKey::TrayLanguageSpanish));
     let _ = handles.quit.set_text(t(locale, MessageKey::TrayQuit));
 
     let pref = state.locale_preference;
@@ -359,6 +404,9 @@ pub fn refresh_tray_menu(app: &AppHandle, state: &AppState) {
     let _ = handles
         .language_zh
         .set_checked(matches!(pref, LocalePreference::ZhCn));
+    let _ = handles
+        .language_es
+        .set_checked(matches!(pref, LocalePreference::EsEs));
 }
 
 fn handle_toggle_visibility(app: &AppHandle) -> Result<(), String> {
@@ -830,6 +878,14 @@ fn install_tray_menu(app: &mut tauri::App, locale: Locale) -> tauri::Result<()> 
         false,
         None::<&str>,
     )?;
+    let language_es = CheckMenuItem::with_id(
+        app,
+        TRAY_MENU_LANG_ES_ID,
+        t(locale, MessageKey::TrayLanguageSpanish),
+        true,
+        false,
+        None::<&str>,
+    )?;
     let language_menu = Submenu::with_id(
         app,
         TRAY_MENU_LANGUAGE_SUBMENU_ID,
@@ -838,6 +894,7 @@ fn install_tray_menu(app: &mut tauri::App, locale: Locale) -> tauri::Result<()> 
     )?;
     language_menu.append(&language_en)?;
     language_menu.append(&language_zh)?;
+    language_menu.append(&language_es)?;
     let quit = MenuItem::with_id(
         app,
         TRAY_MENU_QUIT_ID,
@@ -900,6 +957,9 @@ fn install_tray_menu(app: &mut tauri::App, locale: Locale) -> tauri::Result<()> 
             TRAY_MENU_LANG_ZH_ID => {
                 let _ = handle_set_locale(app, LocalePreference::ZhCn);
             }
+            TRAY_MENU_LANG_ES_ID => {
+                let _ = handle_set_locale(app, LocalePreference::EsEs);
+            }
             TRAY_MENU_QUIT_ID => {
                 // Tauri 2's `app.exit` on macOS does not reliably reach
                 // `process::exit` — NSApplication can intercept the terminate
@@ -932,6 +992,7 @@ fn install_tray_menu(app: &mut tauri::App, locale: Locale) -> tauri::Result<()> 
         language_menu,
         language_en,
         language_zh,
+        language_es,
         quit,
     });
     Ok(())

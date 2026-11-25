@@ -1,4 +1,4 @@
-export type Locale = "en-US" | "zh-CN";
+export type Locale = "en-US" | "zh-CN" | "es-ES";
 
 const messages = {
   "en-US": {
@@ -97,6 +97,7 @@ const messages = {
     dismiss: "Dismiss",
     size: "Pet size",
     soundPack: "Sound pack",
+    spanish: "Español",
     zhCn: "中文",
   },
   "zh-CN": {
@@ -193,6 +194,108 @@ const messages = {
     dismiss: "关闭",
     size: "宠物尺寸",
     soundPack: "音效包",
+    spanish: "Español",
+    zhCn: "中文",
+  },
+  "es-ES": {
+    aboutBuiltWith: "Desarrollado con Tauri, Rust y React.",
+    aboutLicenseNotice: "© Colaboradores de CoPet. Todos los derechos reservados.",
+    aboutRepoLink: "Ver código en GitHub",
+    aboutTitle: "Acerca de",
+    aboutVersion: "Versión",
+    agentIntegrations: "Integraciones de agentes",
+    agentIntegrationsLead:
+      "Activa un agente para que CoPet instale un ligero hook que refleje su estado en vivo en tu mascota de escritorio.",
+    agentClaudeCodeDescription: "CLI oficial de Claude de Anthropic.",
+    agentCodexDescription: "Agente de programación en terminal de OpenAI.",
+    agentCopilotDescription: "Agente de terminal de GitHub Copilot.",
+    agentCursorDescription: "Hooks de agente de Cursor.",
+    agentAntigravityDescription: "Entorno de desarrollo centrado en agentes de Google.",
+    agentGeminiDescription: "Agente CLI de código abierto de Google.",
+    agentOpencodeDescription: "Agente de terminal compatible con cualquier proveedor.",
+    agentPiDescription: "Extensión de agente de programación Pi.",
+    agentStatusUnhealthy: "Requiere atención",
+    agentConfigPathLabel: "Configuración",
+    allPets: "Todas",
+    backToTop: "Volver arriba",
+    builtInPets: "Integradas",
+    builtInSounds: "Sonidos integrados",
+    close: "Cerrar",
+    currentPet: "Mascota actual",
+    customSounds: "Sonidos personalizados",
+    customPets: "Personalizadas",
+    customBadge: "Personalizada",
+    chooseFolders: "Elegir carpetas",
+    english: "English",
+    fromCodex: "Codex",
+    fromFolders: "Carpetas",
+    import: "Importar",
+    importAll: "Importar todas",
+    importPets: "Importar mascotas",
+    importPetsHint:
+      "Elige una fuente, revisa las mascotas compatibles e importa las que prefieras.",
+    importSelected: "Importar seleccionadas",
+    contextMenuShowMessages: "Mostrar mensajes",
+    contextMenuHideMessages: "Ocultar mensajes",
+    contextMenuOpenSettings: "Abrir configuración",
+    contextMenuHidePet: "Ocultar mascota",
+    locateCurrent: "Buscar mascota actual",
+    language: "Idioma",
+    messageDisplay: "Cantidad visible",
+    messageDisplayAll: "Todos los agentes",
+    messageDisplayLatest: "Solo el más reciente",
+    messagesHeading: "Mensajes",
+    navAbout: "Acerca de",
+    navAgents: "Agentes",
+    navPets: "Mascotas",
+    navPreferences: "General",
+    noSoundPacks: "Sin paquetes de sonido",
+    noInstalledPets: "No hay mascotas instaladas.",
+    noMatchingPets: "No hay mascotas coincidentes.",
+    agentMessageVisible: "Mostrar mensajes",
+    agentMessageVisibleDescription: "Mostrar los mensajes del agente sobre la mascota.",
+    switchStateOn: "Activado",
+    switchStateOff: "Desactivado",
+    petInteractionsHeading: "Interacciones de la mascota",
+    petImportSkipped: "Paquetes inválidos omitidos: {count}",
+    enableClickSounds: "Sonidos de la mascota",
+    enableStartupAnimation: "Animación de inicio",
+    enableStartupAnimationDescription:
+      "Reproducir la animación de la mascota al iniciar la aplicación.",
+    interactionCooldown: "Enfriamiento de interacción",
+    interactionCooldownShort: "Corto",
+    interactionCooldownNormal: "Normal",
+    interactionCooldownLazy: "Relajado",
+    pets: "Mascotas",
+    petsDescription: "Elige una mascota o importa un paquete compatible con Codex.",
+    petType: "Tipo de mascota",
+    petWindowHeading: "Ventana de la mascota",
+    preferencesTitle: "General",
+    previewImportsEmpty:
+      "Aún no hay mascotas en vista previa. Elige una fuente para mostrarlas aquí.",
+    remove: "Eliminar",
+    removePreview: "Quitar de la vista previa",
+    refresh: "Actualizar",
+    retry: "Reintentar",
+    resetPosition: "Restablecer posición",
+    resetPositionDescription:
+      "Devuelve la mascota a la esquina inferior derecha de la pantalla.",
+    resetPositionFailed: "No se pudo restablecer la posición de la mascota.",
+    resetPositionSuccess: "La mascota volvió a la esquina inferior derecha.",
+    settingsDescription: "Activa o desactiva cada integración de agente CLI.",
+    settingsNavLabel: "Secciones de configuración",
+    settingsTipDescription:
+      "Da vida a tu imaginación. Crea o importa tu propio paquete de mascota compatible con Codex.",
+    settingsTipTitle: "Crea tu propia mascota",
+    showPet: "Mostrar mascota",
+    searchPets: "Buscar mascotas",
+    selectAll: "Seleccionar todas",
+    selectedPreviewCount: "{count} seleccionadas",
+    selectPreviewPet: "Seleccionar",
+    dismiss: "Descartar",
+    size: "Tamaño de la mascota",
+    soundPack: "Paquete de sonido",
+    spanish: "Español",
     zhCn: "中文",
   },
 } as const;
@@ -200,7 +303,10 @@ const messages = {
 export type MessageKey = keyof (typeof messages)["en-US"];
 
 function normalizeLocale(locale: string | null | undefined): Locale {
-  return locale?.toLowerCase().startsWith("zh") ? "zh-CN" : "en-US";
+  const normalized = locale?.toLowerCase();
+  if (normalized?.startsWith("zh")) return "zh-CN";
+  if (normalized?.startsWith("es")) return "es-ES";
+  return "en-US";
 }
 
 export function createTranslator(locale: string | null | undefined) {

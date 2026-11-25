@@ -639,6 +639,23 @@ impl StoreError {
                 StoreError::Io(error) => format!("I/O 错误：{error}"),
                 StoreError::Json(error) => format!("JSON 错误：{error}"),
             },
+            Locale::EsEs => match self {
+                StoreError::MissingHome => {
+                    "No se encontró el directorio principal del usuario".to_string()
+                }
+                StoreError::PetNotFound(pet_id) => format!("No se encontró la mascota '{pet_id}'"),
+                StoreError::SoundPackNotFound(sound_pack_id) => {
+                    format!("No se encontró el paquete de sonido '{sound_pack_id}'")
+                }
+                StoreError::BuiltInPetCannotBeRemoved(pet_id) => {
+                    format!("La mascota integrada '{pet_id}' no se puede eliminar")
+                }
+                StoreError::InvalidPetPackage(message) => {
+                    format!("Paquete de mascota inválido: {message}")
+                }
+                StoreError::Io(error) => format!("Error de E/S: {error}"),
+                StoreError::Json(error) => format!("Error de JSON: {error}"),
+            },
         }
     }
 }
@@ -662,6 +679,7 @@ fn migrate_legacy_system_locale_preference(value: &mut serde_json::Value) -> boo
     let resolved = match default_locale() {
         Locale::EnUs => "en-US",
         Locale::ZhCn => "zh-CN",
+        Locale::EsEs => "es-ES",
     };
     object.insert(
         "localePreference".to_string(),

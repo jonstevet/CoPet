@@ -8,6 +8,8 @@ pub enum Locale {
     EnUs,
     #[serde(rename = "zh-CN")]
     ZhCn,
+    #[serde(rename = "es-ES")]
+    EsEs,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -16,6 +18,8 @@ pub enum LocalePreference {
     EnUs,
     #[serde(rename = "zh-CN")]
     ZhCn,
+    #[serde(rename = "es-ES")]
+    EsEs,
 }
 
 impl Default for LocalePreference {
@@ -29,6 +33,7 @@ impl LocalePreference {
         match locale {
             Locale::EnUs => Self::EnUs,
             Locale::ZhCn => Self::ZhCn,
+            Locale::EsEs => Self::EsEs,
         }
     }
 
@@ -36,6 +41,7 @@ impl LocalePreference {
         match self {
             Self::EnUs => Locale::EnUs,
             Self::ZhCn => Locale::ZhCn,
+            Self::EsEs => Locale::EsEs,
         }
     }
 }
@@ -56,6 +62,7 @@ pub enum MessageKey {
     TrayLanguageMenu,
     TrayLanguageEnglish,
     TrayLanguageChinese,
+    TrayLanguageSpanish,
     TrayAbout,
     AppMenuAbout,
     AppMenuServices,
@@ -91,6 +98,9 @@ pub fn detect_locale_from_tag(tag: &str) -> Option<Locale> {
     let normalized = tag.trim().replace('_', "-").to_ascii_lowercase();
     if normalized.starts_with("zh") {
         return Some(Locale::ZhCn);
+    }
+    if normalized.starts_with("es") {
+        return Some(Locale::EsEs);
     }
     if normalized.starts_with("en") {
         return Some(Locale::EnUs);
@@ -130,6 +140,14 @@ pub fn t(locale: Locale, key: MessageKey) -> &'static str {
         (Locale::ZhCn, MessageKey::TrayPreferences) => "通用…",
         (Locale::ZhCn, MessageKey::TrayQuit) => "退出应用",
         (Locale::ZhCn, MessageKey::SettingsWindowNotFound) => "未找到设置窗口",
+        (Locale::EsEs, MessageKey::TrayBrand) => "CoPet",
+        (Locale::EsEs, MessageKey::TrayPets) => "Mascotas…",
+        (Locale::EsEs, MessageKey::TrayAgents) => "Agentes…",
+        (Locale::EsEs, MessageKey::TrayPreferences) => "General…",
+        (Locale::EsEs, MessageKey::TrayQuit) => "Salir",
+        (Locale::EsEs, MessageKey::SettingsWindowNotFound) => {
+            "no se encontró la ventana de configuración"
+        }
         // New: Pet lifecycle
         (Locale::EnUs, MessageKey::TrayShowPet) => "Show Pet",
         (Locale::EnUs, MessageKey::TrayHidePet) => "Hide Pet",
@@ -141,16 +159,28 @@ pub fn t(locale: Locale, key: MessageKey) -> &'static str {
         (Locale::ZhCn, MessageKey::TrayShowMessages) => "显示消息",
         (Locale::ZhCn, MessageKey::TrayHideMessages) => "隐藏消息",
         (Locale::ZhCn, MessageKey::TrayResetPosition) => "重置宠物位置",
+        (Locale::EsEs, MessageKey::TrayShowPet) => "Mostrar mascota",
+        (Locale::EsEs, MessageKey::TrayHidePet) => "Ocultar mascota",
+        (Locale::EsEs, MessageKey::TrayShowMessages) => "Mostrar mensajes",
+        (Locale::EsEs, MessageKey::TrayHideMessages) => "Ocultar mensajes",
+        (Locale::EsEs, MessageKey::TrayResetPosition) => "Restablecer posición",
         // New: Language submenu
         (Locale::EnUs, MessageKey::TrayLanguageMenu) => "Language",
         (Locale::EnUs, MessageKey::TrayLanguageEnglish) => "English",
         (Locale::EnUs, MessageKey::TrayLanguageChinese) => "中文",
+        (Locale::EnUs, MessageKey::TrayLanguageSpanish) => "Español",
         (Locale::ZhCn, MessageKey::TrayLanguageMenu) => "语言",
         (Locale::ZhCn, MessageKey::TrayLanguageEnglish) => "English",
         (Locale::ZhCn, MessageKey::TrayLanguageChinese) => "中文",
+        (Locale::ZhCn, MessageKey::TrayLanguageSpanish) => "Español",
+        (Locale::EsEs, MessageKey::TrayLanguageMenu) => "Idioma",
+        (Locale::EsEs, MessageKey::TrayLanguageEnglish) => "English",
+        (Locale::EsEs, MessageKey::TrayLanguageChinese) => "中文",
+        (Locale::EsEs, MessageKey::TrayLanguageSpanish) => "Español",
         // New: About
         (Locale::EnUs, MessageKey::TrayAbout) => "About…",
         (Locale::ZhCn, MessageKey::TrayAbout) => "关于…",
+        (Locale::EsEs, MessageKey::TrayAbout) => "Acerca de…",
         // macOS application menu (top-left). These override the default
         // "<binary_name>" placeholders so labels always read "CoPet".
         (Locale::EnUs, MessageKey::AppMenuAbout) => "About CoPet",
@@ -169,5 +199,13 @@ pub fn t(locale: Locale, key: MessageKey) -> &'static str {
         (Locale::ZhCn, MessageKey::AppMenuQuit) => "退出 CoPet",
         (Locale::ZhCn, MessageKey::AppMenuEdit) => "编辑",
         (Locale::ZhCn, MessageKey::AppMenuWindow) => "窗口",
+        (Locale::EsEs, MessageKey::AppMenuAbout) => "Acerca de CoPet",
+        (Locale::EsEs, MessageKey::AppMenuServices) => "Servicios",
+        (Locale::EsEs, MessageKey::AppMenuHide) => "Ocultar CoPet",
+        (Locale::EsEs, MessageKey::AppMenuHideOthers) => "Ocultar otros",
+        (Locale::EsEs, MessageKey::AppMenuShowAll) => "Mostrar todo",
+        (Locale::EsEs, MessageKey::AppMenuQuit) => "Salir de CoPet",
+        (Locale::EsEs, MessageKey::AppMenuEdit) => "Editar",
+        (Locale::EsEs, MessageKey::AppMenuWindow) => "Ventana",
     }
 }

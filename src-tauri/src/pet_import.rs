@@ -297,6 +297,119 @@ fn localize_partial_error_message(message: &str, locale: Locale) -> String {
     match locale {
         Locale::EnUs => message.to_string(),
         Locale::ZhCn => localize_partial_error_message_zh_cn(message),
+        Locale::EsEs => localize_partial_error_message_es_es(message),
+    }
+}
+
+fn localize_partial_error_message_es_es(message: &str) -> String {
+    if let Some(localized) = localize_known_exact_partial_error_es_es(message) {
+        return localized.to_string();
+    }
+
+    if let Some(path) = message.strip_prefix("selected path is not a folder: ") {
+        return format!("La ruta seleccionada no es una carpeta: {path}");
+    }
+    if let Some(path) = message.strip_prefix("no pet packages found in ") {
+        return format!("No se encontraron paquetes de mascotas en {path}");
+    }
+    if let Some((path, error)) = message
+        .strip_prefix("could not read ")
+        .and_then(|rest| rest.rsplit_once(": "))
+    {
+        return format!(
+            "No se pudo leer {path}: {}",
+            localize_partial_error_message_es_es(error)
+        );
+    }
+    if let Some((path, error)) = message
+        .strip_prefix("could not open ")
+        .and_then(|rest| rest.rsplit_once(": "))
+    {
+        return format!(
+            "No se pudo abrir {path}: {}",
+            localize_partial_error_message_es_es(error)
+        );
+    }
+    if let Some((path, error)) = message
+        .strip_prefix("could not stage ")
+        .and_then(|rest| rest.rsplit_once(": "))
+    {
+        return format!(
+            "No se pudo preparar {path}: {}",
+            localize_partial_error_message_es_es(error)
+        );
+    }
+    if let Some((path, error)) = message
+        .strip_prefix("could not preview ")
+        .and_then(|rest| rest.rsplit_once(": "))
+    {
+        return format!(
+            "No se pudo previsualizar {path}: {}",
+            localize_partial_error_message_es_es(error)
+        );
+    }
+    if let Some((path, error)) = message
+        .strip_prefix("could not clean up preview scratch for ")
+        .and_then(|rest| rest.rsplit_once(": "))
+    {
+        return format!(
+            "No se pudieron limpiar los archivos temporales de vista previa para {path}: {}",
+            localize_partial_error_message_es_es(error)
+        );
+    }
+    if let Some(error) = message.strip_prefix("imported pet but could not remove preview: ") {
+        return format!(
+            "Mascota importada, pero no se pudo eliminar la vista previa: {}",
+            localize_partial_error_message_es_es(error)
+        );
+    }
+    if let Some(message) = message.strip_prefix("pet package is invalid: ") {
+        return format!(
+            "Paquete de mascota inválido: {}",
+            localize_partial_error_message_es_es(message)
+        );
+    }
+    if let Some(error) = message.strip_prefix("I/O error: ") {
+        return format!("Error de E/S: {error}");
+    }
+    if let Some(error) = message.strip_prefix("JSON error: ") {
+        return format!("Error de JSON: {error}");
+    }
+
+    message.to_string()
+}
+
+fn localize_known_exact_partial_error_es_es(message: &str) -> Option<&'static str> {
+    match message {
+        "preview id is invalid" => Some("El ID de vista previa no es válido"),
+        "preview package is no longer available" => {
+            Some("El paquete de vista previa ya no está disponible")
+        }
+        "preview package has an invalid pet id" => {
+            Some("El paquete de vista previa tiene un ID de mascota inválido")
+        }
+        "preview metadata does not match selected preview" => {
+            Some("Los metadatos no coinciden con la vista previa seleccionada")
+        }
+        "preview metadata has an invalid pet id" => {
+            Some("Los metadatos contienen un ID de mascota inválido")
+        }
+        "preview metadata does not match intended pet id" => {
+            Some("Los metadatos no coinciden con el ID de mascota de destino")
+        }
+        "import preview session id is invalid" => {
+            Some("El ID de sesión de vista previa no es válido")
+        }
+        "import preview session was not found" => {
+            Some("No se encontró la sesión de vista previa de importación")
+        }
+        "could not create a unique import preview session" => {
+            Some("No se pudo crear una sesión única de vista previa")
+        }
+        "pet id must be a safe storage id" => {
+            Some("El ID de la mascota debe ser un identificador seguro")
+        }
+        _ => None,
     }
 }
 

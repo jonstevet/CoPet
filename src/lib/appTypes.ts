@@ -61,7 +61,7 @@ export type SoundPackSummary = {
   sounds: PetSounds;
 };
 
-export type Locale = "en-US" | "zh-CN";
+export type Locale = "en-US" | "zh-CN" | "es-ES";
 export type LocalePreference = Locale;
 
 export type AgentMessageDisplay = "all" | "latest";

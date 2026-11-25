@@ -282,7 +282,7 @@ export function usePetWindowSize(): PetWindowSize {
   return useAppSlice((s) => s.appState?.petWindowSize ?? defaultPetWindowSize);
 }
 
-export function useLocale(): "en-US" | "zh-CN" {
+export function useLocale(): "en-US" | "zh-CN" | "es-ES" {
   return useAppSlice((s) => s.appState?.locale ?? "en-US");
 }
 

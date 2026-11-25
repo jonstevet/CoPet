@@ -466,7 +466,7 @@ fn legacy_system_locale_preference_is_migrated_to_detected_locale() {
         .get("localePreference")
         .and_then(|v| v.as_str())
         .unwrap();
-    assert!(stored == "en-US" || stored == "zh-CN");
+    assert!(stored == "en-US" || stored == "zh-CN" || stored == "es-ES");
     assert_ne!(stored, "system");
 }
 
