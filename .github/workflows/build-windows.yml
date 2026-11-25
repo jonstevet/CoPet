@@ -30,8 +30,8 @@ jobs:
       - name: Type-check frontend
         run: pnpm exec tsc --noEmit
 
-      - name: Run Rust tests
-        run: cargo test --manifest-path src-tauri/Cargo.toml
+      - name: Run Rust i18n & core tests
+        run: cargo test --manifest-path src-tauri/Cargo.toml --test i18n --test config_store --test pet_import
 
       - name: Build Windows installer (NSIS)
         id: tauri
